@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação de Compra</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+  <!-- Meta Pixel Code -->
+<script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '841515097862842');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=841515097862842&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4 text-center">Confirme a Compra</h2>
+    <form id="purchaseForm" class="space-y-4">
+      <!-- Nome -->
+      <div>
+        <label for="name" class="block text-gray-700">Nome Completo</label>
+        <input type="text" id="name" class="w-full border rounded p-2" required>
+      </div>
+      <!-- E-mail -->
+      <div>
+        <label for="email" class="block text-gray-700">E-mail</label>
+        <input type="email" id="email" class="w-full border rounded p-2" required>
+      </div>
+      <!-- Telefone -->
+      <div>
+        <label for="phone" class="block text-gray-700">Telefone</label>
+        <input type="tel" id="phone" class="w-full border rounded p-2" required>
+      </div>
+      <!-- Cidade -->
+      <div>
+        <label for="city" class="block text-gray-700">Cidade</label>
+        <input type="text" id="city" class="w-full border rounded p-2" required>
+      </div>
+      <!-- Estado -->
+      <div>
+        <label for="state" class="block text-gray-700">Estado</label>
+        <input type="text" id="state" class="w-full border rounded p-2" required>
+      </div>
+      <!-- Enviar -->
+      <button type="submit" class="w-full bg-blue-500 text-white rounded py-2 mt-4 hover:bg-blue-600">Liberar Conteúdo</button>
+    </form>
+    <!-- Link do Produto -->
+    <div id="productLink" class="mt-4 hidden text-center">
+      <a href="https://linkdoproduto.com" class="text-blue-500 underline">Acesse o Produto</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('purchaseForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      // Coleta os dados do formulário
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const city = document.getElementById('city').value;
+      const state = document.getElementById('state').value;
+
+      // Hash para e-mail e telefone
+      const hashEmail = CryptoJS.SHA256(email).toString();
+      const hashPhone = phone ? CryptoJS.SHA256(phone).toString() : null;
+
+      // Configura payload para a API do Pixel da Meta
+      const data = {
+        data: [
+          {
+            event_name: "Purchase",
+            event_time: Math.floor(new Date() / 1000),
+            action_source: "website",
+            user_data: {
+              em: [hashEmail],
+              ph: [hashPhone],
+              ct: city,
+              st: state
+            },
+            custom_data: {
+              currency: "BRL",
+              value: "142.52" // Ajuste o valor conforme necessário
+            }
+          }
+        ]
+      };
+
+      // Envia o evento para a API da Meta
+      try {
+        await axios.post(`https://graph.facebook.com/v14.0/1919728915105910/events?access_token=EAASclfKeE1cBO1fyCgRXds1Eozfs25xzYMB4gtgGTZCcuvMe6849DtalWfIUhBPVBobnm3ncPeYaX1SnAikLC698E6yrkiI5RRI5kIBZB1cBF5JEfeq2mjB4K7PqL5vpalQUZA9w18BMSYSfkyZAUSW80tnuKZBx9GMjcnnzZB13b2FI2gkXdkhIt3EtbDAp5bxwZDZD`, data);
+
+        // Exibe o link do produto após o sucesso
+        document.getElementById('purchaseForm').classList.add('hidden');
+        document.getElementById('productLink').classList.remove('hidden');
+      } catch (error) {
+        console.error("Erro ao enviar evento para o Facebook:", error);
+        alert("Houve um erro ao processar sua solicitação. Tente novamente.");
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+</body>
+</html>
