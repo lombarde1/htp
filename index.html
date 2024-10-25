@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
   <!-- Meta Pixel Code -->
-<script>
+  <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -18,11 +18,11 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '841515097862842');
     fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=841515097862842&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
@@ -67,17 +67,18 @@
       event.preventDefault();
 
       // Coleta os dados do formulário
-      const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
       const city = document.getElementById('city').value;
       const state = document.getElementById('state').value;
 
-      // Hash para e-mail e telefone
+      // Gera hashes usando SHA256 para campos sensíveis
       const hashEmail = CryptoJS.SHA256(email).toString();
-      const hashPhone = phone ? CryptoJS.SHA256(phone).toString() : null;
+      const hashPhone = CryptoJS.SHA256(phone).toString();
+      const hashCity = CryptoJS.SHA256(city).toString();
+      const hashState = CryptoJS.SHA256(state).toString();
 
-      // Configura payload para a API do Pixel da Meta
+      // Configura o payload para a API do Pixel da Meta
       const data = {
         data: [
           {
@@ -85,14 +86,14 @@
             event_time: Math.floor(new Date() / 1000),
             action_source: "website",
             user_data: {
-              em: email,
-              ph: phone,
-              ct: city,
-              st: state
+              em: [hashEmail],
+              ph: [hashPhone],
+              ct: hashCity,
+              st: hashState
             },
             custom_data: {
               currency: "BRL",
-              value: "142.52" // Ajuste o valor conforme necessário
+              value: "142.52"
             }
           }
         ]
